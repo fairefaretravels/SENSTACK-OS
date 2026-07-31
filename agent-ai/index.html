@@ -143,22 +143,39 @@
 <!-- Business Profile Modal -->
 <div class="modal-overlay" id="profileModal">
   <div class="modal-box">
+
     <div class="modal-head">
-      <div class="modal-title"> Business Profile</div>
+      <div class="modal-title">Business Profile</div>
       <button class="modal-close" id="closeProfileBtn">✕</button>
     </div>
+
     <div class="modal-body" id="profileForm"></div>
+
     <div class="modal-foot" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-  <button class="pf-save-btn" id="saveProfileBtn">
-    Save Business Context
-  </button>
 
-  <button class="pf-save-btn" id="downloadProfileBtn">
-    Download Profile
-  </button>
+      <button class="pf-save-btn" id="saveProfileBtn">
+        Save Business Context
+      </button>
 
-  <span class="pf-status" id="profileStatus"></span>
-</div>
+      <button class="pf-save-btn" id="downloadProfileBtn">
+        Download Profile
+      </button>
+
+      <button class="pf-save-btn" id="uploadProfileBtn">
+        Upload Profile
+      </button>
+
+      <input 
+        type="file" 
+        id="profileFileInput" 
+        accept=".json" 
+        style="display:none;"
+      >
+
+      <span class="pf-status" id="profileStatus"></span>
+
+    </div>
+
   </div>
 </div>
 
@@ -740,31 +757,45 @@ function updateProfileDot(){
   document.getElementById('profileDot').classList.toggle('filled', filled);
 }
 
-async function loadProfile(){
+function loadProfile(){
   try{
-    const res = await window.storage.get('business-profile', false);
-    if(res && res.value){ businessProfile = JSON.parse(res.value); }
-  }catch(err){ businessProfile = {}; }
+    const saved = localStorage.getItem('business-profile');
+
+    if(saved){
+      businessProfile = JSON.parse(saved);
+    }
+
+  }catch(err){
+    businessProfile = {};
+  }
+
   renderProfileForm();
   updateProfileDot();
 }
 
-async function saveProfile(){
+
+function saveProfile(){
+
   profileFields.forEach(f => {
     const el = document.getElementById('pf-' + f.key);
     businessProfile[f.key] = el ? el.value : '';
   });
-  const status = document.getElementById('profileStatus');
-  try{
-    await window.storage.set('business-profile', JSON.stringify(businessProfile), false);
-    status.textContent = 'Saved ✓';
-    updateProfileDot();
-  }catch(err){
-    status.textContent = 'Save failed — try again';
-  }
-  setTimeout(() => status.textContent = '', 2000);
-}
 
+  localStorage.setItem(
+    'business-profile',
+    JSON.stringify(businessProfile)
+  );
+
+  const status = document.getElementById('profileStatus');
+
+  status.textContent = 'Saved ✓';
+
+  updateProfileDot();
+
+  setTimeout(() => {
+    status.textContent = '';
+  }, 2000);
+}
 document.getElementById('downloadProfileBtn')
 .addEventListener('click', () => {
 
