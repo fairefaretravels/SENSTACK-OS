@@ -144,14 +144,21 @@
 <div class="modal-overlay" id="profileModal">
   <div class="modal-box">
     <div class="modal-head">
-      <div class="modal-title">📋 Business Profile</div>
+      <div class="modal-title"> Business Profile</div>
       <button class="modal-close" id="closeProfileBtn">✕</button>
     </div>
     <div class="modal-body" id="profileForm"></div>
-    <div class="modal-foot" style="display:flex; align-items:center;">
-      <button class="pf-save-btn" id="saveProfileBtn">Save Business Context</button>
-      <span class="pf-status" id="profileStatus"></span>
-    </div>
+    <div class="modal-foot" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+  <button class="pf-save-btn" id="saveProfileBtn">
+    Save Business Context
+  </button>
+
+  <button class="pf-save-btn" id="downloadProfileBtn">
+    Download Profile
+  </button>
+
+  <span class="pf-status" id="profileStatus"></span>
+</div>
   </div>
 </div>
 
@@ -757,6 +764,32 @@ async function saveProfile(){
   }
   setTimeout(() => status.textContent = '', 2000);
 }
+
+document.getElementById('downloadProfileBtn')
+.addEventListener('click', () => {
+
+  const data = JSON.stringify(
+    businessProfile,
+    null,
+    2
+  );
+
+  const blob = new Blob(
+    [data],
+    {type:"application/json"}
+  );
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "SENSTACK-business-profile.json";
+
+  link.click();
+
+  URL.revokeObjectURL(url);
+
+});  
 
 document.getElementById('openProfileBtn').addEventListener('click', () => {
   renderProfileForm();
